@@ -1,6 +1,8 @@
 //! ClinVar XML Processor main entry point
 
+pub mod coding;
 pub mod common;
+pub mod records;
 pub mod xml_to_tsv;
 
 use clap::{Parser, Subcommand};

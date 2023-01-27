@@ -1,6 +1,9 @@
 //! Common functionality.
 
-use std::{fs::File, io::Read};
+use std::{
+    fs::File,
+    io::{BufRead, BufReader},
+};
 
 use byte_unit::Byte;
 use clap_verbosity_flag::{InfoLevel, Verbosity};
@@ -28,13 +31,15 @@ pub fn trace_rss_now() {
 }
 
 /// Transparently open a file with gzip decoder.
-pub fn open_maybe_gz(path: &str) -> Result<Box<dyn Read>, anyhow::Error> {
+pub fn open_maybe_gz(path: &str) -> Result<Box<dyn BufRead>, anyhow::Error> {
     if path.ends_with(".gz") {
         let file = File::open(path)?;
         let decoder = GzDecoder::new(file);
-        Ok(Box::new(decoder))
+        let reader = BufReader::new(decoder);
+        Ok(Box::new(reader))
     } else {
         let file = File::open(path)?;
-        Ok(Box::new(file))
+        let reader = BufReader::new(file);
+        Ok(Box::new(reader))
     }
 }
