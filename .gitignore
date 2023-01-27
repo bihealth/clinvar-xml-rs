@@ -1,0 +1,12 @@
+## Text Editors
+
+*~
+.*.sw?
+
+## Cargo
+
+/target
+
+## Flatbuffers
+
+utils/var
