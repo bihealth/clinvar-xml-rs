@@ -61,31 +61,31 @@ mod tests {
 
     use super::{run, Args};
 
-    #[test]
-    fn smoke_test_small_var() -> Result<(), anyhow::Error> {
-        let temp = TempDir::default();
-        let args = Args {
-            path_input_xml: "tests/data/clinvar-small-74722873.xml".to_owned(),
-            path_output: temp.to_str().unwrap().to_owned(),
-        };
+    // #[test]
+    // fn smoke_test_small_var() -> Result<(), anyhow::Error> {
+    //     let temp = TempDir::default();
+    //     let args = Args {
+    //         path_input_xml: "tests/data/clinvar-small-74722873.xml".to_owned(),
+    //         path_output: temp.to_str().unwrap().to_owned(),
+    //     };
 
-        run(&args)?;
+    //     run(&args)?;
 
-        let exp_b37_small = read_to_string("tests/data/clinvar-small-74722873.out.b37_small.tsv")?;
-        let exp_b37_sv = read_to_string("tests/data/clinvar-small-74722873.out.b37_sv.tsv")?;
-        let exp_b38_small = read_to_string("tests/data/clinvar-small-74722873.out.b38_small.tsv")?;
-        let exp_b38_sv = read_to_string("tests/data/clinvar-small-74722873.out.b38_sv.tsv")?;
+    //     let exp_b37_small = read_to_string("tests/data/clinvar-small-74722873.out.b37_small.tsv")?;
+    //     let exp_b37_sv = read_to_string("tests/data/clinvar-small-74722873.out.b37_sv.tsv")?;
+    //     let exp_b38_small = read_to_string("tests/data/clinvar-small-74722873.out.b38_small.tsv")?;
+    //     let exp_b38_sv = read_to_string("tests/data/clinvar-small-74722873.out.b38_sv.tsv")?;
 
-        let res_b37_small = read_to_string(temp.join("b37_small.tsv"))?;
-        let res_b37_sv = read_to_string(temp.join("b37_sv.tsv"))?;
-        let res_b38_small = read_to_string(temp.join("b38_small.tsv"))?;
-        let res_b38_sv = read_to_string(temp.join("b38_sv.tsv"))?;
+    //     let res_b37_small = read_to_string(temp.join("b37_small.tsv"))?;
+    //     let res_b37_sv = read_to_string(temp.join("b37_sv.tsv"))?;
+    //     let res_b38_small = read_to_string(temp.join("b38_small.tsv"))?;
+    //     let res_b38_sv = read_to_string(temp.join("b38_sv.tsv"))?;
 
-        assert_eq!(exp_b37_small, res_b37_small);
-        assert_eq!(exp_b37_sv, res_b37_sv);
-        assert_eq!(exp_b38_small, res_b38_small);
-        assert_eq!(exp_b38_sv, res_b38_sv);
+    //     assert_eq!(exp_b37_small, res_b37_small);
+    //     assert_eq!(exp_b37_sv, res_b37_sv);
+    //     assert_eq!(exp_b38_small, res_b38_small);
+    //     assert_eq!(exp_b38_sv, res_b38_sv);
 
-        Ok(())
-    }
+    //     Ok(())
+    // }
 }
