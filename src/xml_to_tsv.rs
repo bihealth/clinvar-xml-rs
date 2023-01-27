@@ -1,12 +1,21 @@
 //! Code supporting XML to TSV conversion.
 
-use std::{fs::File, path::Path, time::Instant};
+use std::{
+    fs::File,
+    io::{BufRead, BufReader, Read},
+    path::Path,
+    time::Instant,
+};
 
 use clap::{command, Parser};
+use flate2::read::GzDecoder;
 use quick_xml::reader::Reader;
 use tracing::info;
 
-use crate::common::open_maybe_gz;
+// size of buffers sent across threads
+const BUF_SIZE: usize = 256 * 1024;
+// length of queue with buffers pre-filled in background thread
+const QUEUE_LEN: usize = 5;
 
 /// Command line arguments for `sv bg-db-to-bin` sub command.
 #[derive(Parser, Debug)]
@@ -40,13 +49,60 @@ impl OutputFiles {
     }
 }
 
-#[tracing::instrument]
+fn run_impl(reader: &mut impl Read, args: &Args) -> Result<(), anyhow::Error> {
+    let reader = BufReader::new(reader);
+    let mut xml_reader = Reader::from_reader(reader);
+    let output_files = OutputFiles::from_output_path(&args.path_output)?;
+
+    // scratch space for building ClinVarSet
+
+    let mut buf = Vec::new();
+    loop {
+        match xml_reader.read_event_into(&mut buf)? {
+            quick_xml::events::Event::Start(elem) => {
+                match elem.name().as_ref() {
+                    b"ClinVarSet" => {
+                        elem.attributes().for_each(|a| {
+                            let a = a.unwrap();
+                            if a.key.local_name().as_ref() == b"ID" {
+                                println!("ID = {}", std::str::from_utf8(a.value.as_ref()).unwrap());
+                            }
+                        })
+                    },
+                    _ => ()
+                }
+            }
+            // quick_xml::events::Event::End(_) => todo!(),
+            // quick_xml::events::Event::Empty(_) => todo!(),
+            // quick_xml::events::Event::Text(_) => todo!(),
+            // quick_xml::events::Event::CData(_) => todo!(),
+            // quick_xml::events::Event::Decl(_) => todo!(),
+            // quick_xml::events::Event::PI(_) => todo!(),
+            quick_xml::events::Event::Eof => break,
+            _ => (),
+        }
+
+        buf.clear();
+    }
+
+    Ok(())
+}
+
 pub fn run(args: &Args) -> Result<(), anyhow::Error> {
     let before_run = Instant::now();
     info!("starting xml-to-tsv");
 
-    let xml_reader = Reader::from_reader(open_maybe_gz(&args.path_input_xml)?);
-    let output_files = OutputFiles::from_output_path(&args.path_output)?;
+    let file = File::open(&args.path_input_xml)?;
+    if args.path_input_xml.ends_with(".gz") {
+        let decoder = GzDecoder::new(file);
+
+        thread_io::read::reader(BUF_SIZE, QUEUE_LEN, decoder, |reader| {
+            run_impl(reader, args)
+        })?;
+    } else {
+        let mut buf_reader = BufReader::new(file);
+        run_impl(&mut buf_reader, args)?;
+    }
 
     info!("xml-to-tsv ran for {:?}", before_run.elapsed());
     Ok(())

@@ -6,7 +6,7 @@ use chrono::NaiveDate;
 use shrinkwraprs::Shrinkwrap;
 
 /// Represent clinical significance.
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, Default)]
 pub struct ClinicalSignificance {
     /// Date of last evaluation.
     pub date_evaluated: NaiveDate,
@@ -19,7 +19,7 @@ pub struct ClinicalSignificance {
 }
 
 /// Relevant information from `ObservedData/Attribute[@Type="Description"]`.
-#[derive(Debug, PartialEq, Eq)]
+#[derive(Debug, Default)]
 pub struct ObservedDataDescription {
     /// Optional description text.
     pub description: Option<String>,
@@ -30,6 +30,7 @@ pub struct ObservedDataDescription {
 }
 
 /// Relevant part of `ObservedIn`.
+#[derive(Debug, Default)]
 pub struct ObservedIn {
     /// The origin of the sample.
     pub origin: String,
@@ -44,6 +45,7 @@ pub struct ObservedIn {
 }
 
 /// Sequence location information.
+#[derive(Debug, Default)]
 pub struct SequenceLocation {
     pub assembly: String,
     pub chrom: String,
@@ -59,6 +61,7 @@ pub struct SequenceLocation {
 }
 
 /// Represent the relevant information from a Measure.
+#[derive(Debug, Default)]
 pub struct Measure {
     pub measure_type: String,
     pub symbols: Vec<String>,
@@ -68,12 +71,14 @@ pub struct Measure {
 }
 
 /// Represent the relevant information from a Trait.
+#[derive(Debug, Default)]
 pub struct Trait {
     pub preferred_name: Option<String>,
     pub alternate_names: Vec<String>,
 }
 
 /// Represent the relevant information from a TraitSet.
+#[derive(Debug, Default)]
 pub struct TraitSet {
     /// Value of the "Type" attribute.
     pub set_type: String,
@@ -84,6 +89,7 @@ pub struct TraitSet {
 }
 
 /// Represent the relevant information from a MeasureSet.
+#[derive(Debug, Default)]
 pub struct MeasureSet {
     pub set_type: String,
     pub accession: String,
@@ -93,6 +99,7 @@ pub struct MeasureSet {
 /// Represents a genotype observation in ClinVar.
 ///
 /// NB: we introduce dummy sets even for non-compound variants.
+#[derive(Debug, Default)]
 pub struct GenotypeSet {
     pub set_type: String,
     pub accession: String,
@@ -100,6 +107,7 @@ pub struct GenotypeSet {
 }
 
 /// Represent the relevant parts of a `ReferenceClinVarAssertion`
+#[derive(Debug, Default)]
 pub struct ReferenceClinVarAssertion {
     /// Numeric id_no for the ClinVarSet.
     pub id_no: String,
@@ -132,6 +140,7 @@ pub struct ReferenceClinVarAssertion {
 }
 
 /// Represent the relevant parts of a `ClinVarAssertion`.
+#[derive(Debug, Default)]
 pub struct ClinVarAssertion {
     /// Numeric id_no for the ClinVarSet.
     pub id_no: u32,
@@ -160,6 +169,7 @@ pub struct ClinVarAssertion {
 }
 
 /// Represent the relevant parts of a ClinVarSet
+#[derive(Debug, Default)]
 pub struct ClinVarSet {
     /// Numeric id_no for the ClinVarSet.
     pub id_no: u32,
@@ -174,26 +184,29 @@ pub struct ClinVarSet {
 }
 
 /// Root tag representation.
+#[derive(PartialEq, PartialOrd, Eq, Debug, Default)]
 pub struct ReleaseSet {
     pub release_date: NaiveDate,
 }
 
 /// Pathogenicity.
-#[derive(PartialEq, PartialOrd, Eq, Hash, Copy, Clone, Debug)]
+#[derive(PartialEq, PartialOrd, Eq, Hash, Copy, Clone, Debug, Default)]
 pub enum Pathogenicity {
     Benign,
     LikelyBenign,
+    #[default]
     Uncertain,
     LikelyPathogenic,
     Pathogenic,
 }
 
 /// Review status.
-#[derive(PartialEq, Eq, Hash, Copy, Clone, Debug)]
+#[derive(PartialEq, Eq, Hash, Copy, Clone, Debug, Default)]
 pub enum ReviewStatus {
     ConflictingInterpretations,
     CriteriaProvided,
     MultipleSubmitters,
+    #[default]
     NoAssertionCriteriaProvided,
     NoAssertionProvided,
     NoConflicts,
@@ -203,7 +216,7 @@ pub enum ReviewStatus {
 }
 
 /// Gold star representation.
-#[derive(Shrinkwrap, PartialEq, Eq, Debug, Copy, Clone)]
+#[derive(Shrinkwrap, PartialEq, Eq, Debug, Copy, Clone, Default)]
 pub struct GoldStars(u32);
 
 impl GoldStars {
